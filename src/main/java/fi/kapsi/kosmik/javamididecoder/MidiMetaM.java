@@ -1,7 +1,5 @@
 package fi.kapsi.kosmik.javamididecoder;
 
-import fi.kapsi.kosmik.javamididecoder.util.Util;
-
 import javax.sound.midi.MetaMessage;
 
 import static java.lang.String.format;
@@ -247,8 +245,9 @@ public abstract class MidiMetaM extends MidiM<MetaMessage> {
             super(m);
         }
 
-        public String getHexString() {
-            return Util.getHexString(dataCopy);
+        public byte[] getData() {
+            // Return a copy of the data.
+            return m.getData();
         }
 
         @Override
@@ -262,8 +261,9 @@ public abstract class MidiMetaM extends MidiM<MetaMessage> {
             super(m);
         }
 
-        public String getHexString() {
-            return Util.getHexString(dataCopy);
+        public byte[] getData() {
+            // Return a copy of the data.
+            return m.getData();
         }
 
         @Override

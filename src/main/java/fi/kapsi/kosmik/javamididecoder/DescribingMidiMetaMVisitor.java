@@ -12,6 +12,7 @@ import fi.kapsi.kosmik.javamididecoder.MidiMetaM.MidiTempoM;
 import fi.kapsi.kosmik.javamididecoder.MidiMetaM.MidiTimeSignatureM;
 import fi.kapsi.kosmik.javamididecoder.MidiMetaM.MidiUnsupportedMetaM;
 
+import static fi.kapsi.kosmik.javamididecoder.util.Util.getHexString;
 import static java.lang.String.format;
 
 public class DescribingMidiMetaMVisitor implements MidiMetaMVisitor<String> {
@@ -57,11 +58,11 @@ public class DescribingMidiMetaMVisitor implements MidiMetaMVisitor<String> {
 
     @Override
     public String visit(MidiSequencerSpecificMetaM m) {
-        return format("sequencer specific meta: %s", m.getHexString());
+        return format("sequencer specific meta: %s", getHexString(m.getData()));
     }
 
     @Override
     public String visit(MidiUnsupportedMetaM m) {
-        return format("unsupported meta message: [%s]", m.getHexString());
+        return format("unsupported meta message: [%s]", getHexString(m.getData()));
     }
 }
