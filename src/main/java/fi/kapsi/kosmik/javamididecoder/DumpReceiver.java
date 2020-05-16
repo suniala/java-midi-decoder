@@ -1,4 +1,4 @@
-package dumpreceiver;
+package fi.kapsi.kosmik.javamididecoder;
 
 import	java.io.PrintStream;
 
