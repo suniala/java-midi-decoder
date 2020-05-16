@@ -20,7 +20,7 @@ import java.io.*;
 
 /**	Displays the file format information of a MIDI file.
  */
-public class DumpReceiver
+public class MidiDecoder
         implements	Receiver
 {
     //Receiver synthRcvr;
@@ -80,13 +80,13 @@ public class DumpReceiver
 
 
 
-    public DumpReceiver(PrintStream printStream)
+    public MidiDecoder(PrintStream printStream)
     {
         this(printStream, false);
     }
 
 
-    public DumpReceiver(PrintStream printStream,
+    public MidiDecoder(PrintStream printStream,
                         boolean bPrintTimeStampAsTicks)
     {
         m_printStream = printStream;
