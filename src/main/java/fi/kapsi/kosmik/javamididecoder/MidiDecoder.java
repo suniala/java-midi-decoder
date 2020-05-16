@@ -1,5 +1,17 @@
 package fi.kapsi.kosmik.javamididecoder;
 
+import fi.kapsi.kosmik.javamididecoder.MidiMetaM.MidiChannelPrefixM;
+import fi.kapsi.kosmik.javamididecoder.MidiMetaM.MidiEndOfTrackM;
+import fi.kapsi.kosmik.javamididecoder.MidiMetaM.MidiKeySignatureM;
+import fi.kapsi.kosmik.javamididecoder.MidiMetaM.MidiMetaMVisitor;
+import fi.kapsi.kosmik.javamididecoder.MidiMetaM.MidiMetaTextM;
+import fi.kapsi.kosmik.javamididecoder.MidiMetaM.MidiMetaTextM.MetaTextType;
+import fi.kapsi.kosmik.javamididecoder.MidiMetaM.MidiSMTPEOffsetM;
+import fi.kapsi.kosmik.javamididecoder.MidiMetaM.MidiSequenceNumberM;
+import fi.kapsi.kosmik.javamididecoder.MidiMetaM.MidiSequencerSpecificMetaM;
+import fi.kapsi.kosmik.javamididecoder.MidiMetaM.MidiTempoM;
+import fi.kapsi.kosmik.javamididecoder.MidiMetaM.MidiTimeSignatureM;
+import fi.kapsi.kosmik.javamididecoder.MidiMetaM.MidiUnsupportedMetaM;
 import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiControlChangeM;
 import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiKeyPressureM;
 import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiMTCQuarterFrameM;
@@ -21,16 +33,13 @@ import javax.sound.midi.ShortMessage;
 import javax.sound.midi.SysexMessage;
 
 public class MidiDecoder {
-    public static long seByteCount = 0;
-    public static long seCount = 0;
-
     private static final String[] sm_astrKeyNames = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
-
-    private static final String[] sm_astrKeySignatures = {"Cb", "Gb", "Db", "Ab", "Eb", "Bb", "F", "C", "G", "D", "A", "E", "B", "F#", "C#"};
 
     public static final MidiShortMVisitor<String> SHORT_M_DUMP_VISITOR = new DescribingMidiShortMVisitor();
 
     private static final MidiSysexMVisitor<String> SYSEX_M_DUMP_VISITOR = new DescribingMidiSysexMVisitor();
+
+    private static final MidiMetaMVisitor<String> META_M_DUMP_VISITOR = new DescribingMidiMetaMVisitor();
 
     public String decodeMessage(MidiMessage message) {
         String strMessage;
@@ -41,9 +50,10 @@ public class MidiDecoder {
             var m = decodeMessage((SysexMessage) message);
             strMessage = m.accept(SYSEX_M_DUMP_VISITOR);
         } else if (message instanceof MetaMessage) {
-            strMessage = decodeMessage((MetaMessage) message);
+            var m = decodeMessage((MetaMessage) message);
+            strMessage = m.accept(META_M_DUMP_VISITOR);
         } else {
-            strMessage = "unknown message type";
+            throw new IllegalArgumentException("Unsupported message type: " + message.getClass());
         }
         return strMessage;
     }
@@ -84,103 +94,41 @@ public class MidiDecoder {
         return new MidiDescribedSysexM(message);
     }
 
-    public String decodeMessage(MetaMessage message) {
-        byte[] abData = message.getData();
-        String strMessage;
+    public MidiMetaM decodeMessage(MetaMessage message) {
         switch (message.getType()) {
             case 0:
-                int nSequenceNumber = ((abData[0] & 0xFF) << 8) | (abData[1] & 0xFF);
-                strMessage = "Sequence Number: " + nSequenceNumber;
-                break;
-
+                return new MidiSequenceNumberM(message);
             case 1:
-                String strText = new String(abData);
-                strMessage = "Text Event: " + strText;
-                break;
-
+                return new MidiMetaTextM(message, MetaTextType.TextEvent);
             case 2:
-                String strCopyrightText = new String(abData);
-                strMessage = "Copyright Notice: " + strCopyrightText;
-                break;
-
+                return new MidiMetaTextM(message, MetaTextType.CopyrightNotice);
             case 3:
-                String strTrackName = new String(abData);
-                strMessage = "Sequence/Track Name: " + strTrackName;
-                break;
-
+                return new MidiMetaTextM(message, MetaTextType.SequenceTrackName);
             case 4:
-                String strInstrumentName = new String(abData);
-                strMessage = "Instrument Name: " + strInstrumentName;
-                break;
-
+                return new MidiMetaTextM(message, MetaTextType.InstrumentName);
             case 5:
-                String strLyrics = new String(abData);
-                strMessage = "Lyric: " + strLyrics;
-                break;
-
+                return new MidiMetaTextM(message, MetaTextType.Lyric);
             case 6:
-                String strMarkerText = new String(abData);
-                strMessage = "Marker: " + strMarkerText;
-                break;
-
+                return new MidiMetaTextM(message, MetaTextType.Marker);
             case 7:
-                String strCuePointText = new String(abData);
-                strMessage = "Cue Point: " + strCuePointText;
-                break;
-
+                return new MidiMetaTextM(message, MetaTextType.CuePoint);
             case 0x20:
-                int nChannelPrefix = abData[0] & 0xFF;
-                strMessage = "MIDI Channel Prefix: " + nChannelPrefix;
-                break;
-
+                return new MidiChannelPrefixM(message);
             case 0x2F:
-                strMessage = "End of Track";
-                break;
-
+                return new MidiEndOfTrackM(message);
             case 0x51:
-                int nTempo = ((abData[0] & 0xFF) << 16)
-                        | ((abData[1] & 0xFF) << 8)
-                        | (abData[2] & 0xFF);           // tempo in microseconds per beat
-                float bpm = convertTempo(nTempo);
-                // truncate it to 2 digits after dot
-                bpm = Math.round(bpm * 100.0f) / 100.0f;
-                strMessage = "Set Tempo: " + bpm + " bpm";
-                break;
-
+                return new MidiTempoM(message);
             case 0x54:
-                strMessage = "SMTPE Offset: "
-                        + (abData[0] & 0xFF) + ":"
-                        + (abData[1] & 0xFF) + ":"
-                        + (abData[2] & 0xFF) + "."
-                        + (abData[3] & 0xFF) + "."
-                        + (abData[4] & 0xFF);
-                break;
-
+                return new MidiSMTPEOffsetM(message);
             case 0x58:
-                strMessage = "Time Signature: "
-                        + (abData[0] & 0xFF) + "/" + (1 << (abData[1] & 0xFF))
-                        + ", MIDI clocks per metronome tick: " + (abData[2] & 0xFF)
-                        + ", 1/32 per 24 MIDI clocks: " + (abData[3] & 0xFF);
-                break;
-
+                return new MidiTimeSignatureM(message);
             case 0x59:
-                String strGender = (abData[1] == 1) ? "minor" : "major";
-                strMessage = "Key Signature: " + sm_astrKeySignatures[abData[0] + 7] + " " + strGender;
-                break;
-
+                return new MidiKeySignatureM(message);
             case 0x7F:
-                // TODO: decode vendor code, dump data in rows
-                String strDataDump = getHexString(abData);
-                strMessage = "Sequencer-Specific Meta event: " + strDataDump;
-                break;
-
+                return new MidiSequencerSpecificMetaM(message);
             default:
-                String strUnknownDump = getHexString(abData);
-                strMessage = "unknown Meta event: " + strUnknownDump;
-                break;
-
+                return new MidiUnsupportedMetaM(message);
         }
-        return strMessage;
     }
 
     public static String getKeyName(int nKeyNumber) {
@@ -195,14 +143,6 @@ public class MidiDecoder {
 
     public static int get14bitValue(int nLowerPart, int nHigherPart) {
         return (nLowerPart & 0x7F) | ((nHigherPart & 0x7F) << 7);
-    }
-
-    // convert from microseconds per quarter note to beats per minute and vice versa
-    private static float convertTempo(float value) {
-        if (value <= 0) {
-            value = 0.1f;
-        }
-        return 60000000.0f / value;
     }
 
     private static final char[] hexDigits =

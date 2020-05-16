@@ -1,0 +1,273 @@
+package fi.kapsi.kosmik.javamididecoder;
+
+import javax.sound.midi.MetaMessage;
+
+import static fi.kapsi.kosmik.javamididecoder.MidiDecoder.getHexString;
+import static java.lang.String.format;
+
+public abstract class MidiMetaM extends MidiM<MetaMessage> {
+    /**
+     * A copy of the data to be used instead of {@link MetaMessage#getData()}, that
+     * always returns a new copy.
+     */
+    protected final byte[] dataCopy;
+
+    protected MidiMetaM(MetaMessage m) {
+        super(m);
+        dataCopy = m.getData();
+    }
+
+    public abstract <T> T accept(MidiMetaMVisitor<T> visitor);
+
+    public interface MidiMetaMVisitor<T> {
+        T visit(MidiSequenceNumberM m);
+
+        T visit(MidiMetaTextM m);
+
+        T visit(MidiUnsupportedMetaM m);
+
+        T visit(MidiChannelPrefixM m);
+
+        T visit(MidiEndOfTrackM m);
+
+        T visit(MidiTempoM m);
+
+        T visit(MidiSMTPEOffsetM m);
+
+        T visit(MidiTimeSignatureM m);
+
+        T visit(MidiKeySignatureM m);
+
+        T visit(MidiSequencerSpecificMetaM m);
+    }
+
+    public static class MidiSequenceNumberM extends MidiMetaM {
+        public MidiSequenceNumberM(MetaMessage m) {
+            super(m);
+        }
+
+        public int number() {
+            return ((dataCopy[0] & 0xFF) << 8) | (dataCopy[1] & 0xFF);
+        }
+
+        @Override
+        public <T> T accept(MidiMetaMVisitor<T> visitor) {
+            return visitor.visit(this);
+        }
+    }
+
+    public static class MidiMetaTextM extends MidiMetaM {
+        public enum MetaTextType {
+            TextEvent("Text Event"),
+            CopyrightNotice("Copyright Notice"),
+            SequenceTrackName("Sequence/Track Name"),
+            InstrumentName("Instrument Name"),
+            Lyric("Lyric"),
+            Marker("Marker"),
+            CuePoint("Cue Point");
+
+            public final String label;
+
+            MetaTextType(String label) {
+                this.label = label;
+            }
+        }
+
+        private final MetaTextType type;
+
+        public MidiMetaTextM(MetaMessage m, MetaTextType type) {
+            super(m);
+            this.type = type;
+        }
+
+        public MetaTextType type() {
+            return type;
+        }
+
+        public String text() {
+            return new String(dataCopy);
+        }
+
+        @Override
+        public <T> T accept(MidiMetaMVisitor<T> visitor) {
+            return visitor.visit(this);
+        }
+    }
+
+    public static class MidiChannelPrefixM extends MidiMetaM {
+        public MidiChannelPrefixM(MetaMessage m) {
+            super(m);
+        }
+
+        public int prefix() {
+            return dataCopy[0] & 0xFF;
+        }
+
+        @Override
+        public <T> T accept(MidiMetaMVisitor<T> visitor) {
+            return visitor.visit(this);
+        }
+    }
+
+    public static class MidiEndOfTrackM extends MidiMetaM {
+        public MidiEndOfTrackM(MetaMessage m) {
+            super(m);
+        }
+
+        @Override
+        public <T> T accept(MidiMetaMVisitor<T> visitor) {
+            return visitor.visit(this);
+        }
+    }
+
+    public static class MidiTempoM extends MidiMetaM {
+        public MidiTempoM(MetaMessage m) {
+            super(m);
+        }
+
+        public int microsecondsPerBeat() {
+            return ((dataCopy[0] & 0xFF) << 16)
+                    | ((dataCopy[1] & 0xFF) << 8)
+                    | (dataCopy[2] & 0xFF);
+        }
+
+        public float bpm() {
+            float bpm = microsecondsPerBeatToBpm(microsecondsPerBeat());
+            return Math.round(bpm * 100.0f) / 100.0f;
+        }
+
+        private static float microsecondsPerBeatToBpm(float value) {
+            if (value <= 0) {
+                value = 0.1f;
+            }
+            return 60000000.0f / value;
+        }
+
+        @Override
+        public <T> T accept(MidiMetaMVisitor<T> visitor) {
+            return visitor.visit(this);
+        }
+    }
+
+    public static class MidiSMTPEOffsetM extends MidiMetaM {
+        public MidiSMTPEOffsetM(MetaMessage m) {
+            super(m);
+        }
+
+        public int part1() {
+            return (dataCopy[0] & 0xFF);
+        }
+
+        public int part2() {
+            return (dataCopy[1] & 0xFF);
+        }
+
+        public int part3() {
+            return (dataCopy[2] & 0xFF);
+        }
+
+        public int part4() {
+            return (dataCopy[3] & 0xFF);
+        }
+
+        public int part5() {
+            return (dataCopy[4] & 0xFF);
+        }
+
+        @Override
+        public <T> T accept(MidiMetaMVisitor<T> visitor) {
+            return visitor.visit(this);
+        }
+    }
+
+    public static class MidiTimeSignatureM extends MidiMetaM {
+        public static class TimeSignature {
+            private final int beats;
+
+            private final int unit;
+
+            public TimeSignature(int beats, int unit) {
+                this.beats = beats;
+                this.unit = unit;
+            }
+
+            public int beats() {
+                return beats;
+            }
+
+            public int unit() {
+                return unit;
+            }
+        }
+
+        public MidiTimeSignatureM(MetaMessage m) {
+            super(m);
+        }
+
+        public TimeSignature timeSignature() {
+            return new TimeSignature((dataCopy[0] & 0xFF), (1 << (dataCopy[1] & 0xFF)));
+        }
+
+        public int midiClocksPerMetronomeTick() {
+            return (dataCopy[2] & 0xFF);
+        }
+
+        public int demisemiquaversPer24MidiClocks() {
+            return (dataCopy[3] & 0xFF);
+        }
+
+        @Override
+        public <T> T accept(MidiMetaMVisitor<T> visitor) {
+            return visitor.visit(this);
+        }
+    }
+
+    public static class MidiKeySignatureM extends MidiMetaM {
+        private static final String[] keySignatureNames =
+                {"Cb", "Gb", "Db", "Ab", "Eb", "Bb", "F", "C", "G", "D", "A", "E", "B", "F#", "C#"};
+
+        public MidiKeySignatureM(MetaMessage m) {
+            super(m);
+        }
+
+        public String description() {
+            String type = (dataCopy[1] == 1) ? "minor" : "major";
+            return format("%s %s", keySignatureNames[dataCopy[0] + 7], type);
+        }
+
+        @Override
+        public <T> T accept(MidiMetaMVisitor<T> visitor) {
+            return visitor.visit(this);
+        }
+    }
+
+    public static class MidiSequencerSpecificMetaM extends MidiMetaM {
+        public MidiSequencerSpecificMetaM(MetaMessage m) {
+            super(m);
+        }
+
+        public String hexString() {
+            return getHexString(dataCopy);
+        }
+
+        @Override
+        public <T> T accept(MidiMetaMVisitor<T> visitor) {
+            return visitor.visit(this);
+        }
+    }
+
+    public static class MidiUnsupportedMetaM extends MidiMetaM {
+        public MidiUnsupportedMetaM(MetaMessage m) {
+            super(m);
+        }
+
+        public String hexString() {
+            return getHexString(dataCopy);
+        }
+
+        @Override
+        public <T> T accept(MidiMetaMVisitor<T> visitor) {
+            return visitor.visit(this);
+        }
+    }
+}
