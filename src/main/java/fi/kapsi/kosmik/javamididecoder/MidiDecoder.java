@@ -12,6 +12,8 @@ import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiShortMVisitor;
 import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiSongPositionM;
 import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiSongSelectM;
 import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiUnsupportedShortM;
+import fi.kapsi.kosmik.javamididecoder.MidiSysexM.MidiDescribedSysexM;
+import fi.kapsi.kosmik.javamididecoder.MidiSysexM.MidiSysexMVisitor;
 
 import javax.sound.midi.MetaMessage;
 import javax.sound.midi.MidiMessage;
@@ -28,13 +30,16 @@ public class MidiDecoder {
 
     public static final MidiShortMVisitor<String> SHORT_M_DUMP_VISITOR = new StringMidiShortMVisitor();
 
+    private static final MidiSysexMVisitor<String> SYSEX_M_DUMP_VISITOR = new DescribingMidiSysexMVisitor();
+
     public String decodeMessage(MidiMessage message) {
         String strMessage;
         if (message instanceof ShortMessage) {
             var m = decodeMessage((ShortMessage) message);
             strMessage = m.accept(SHORT_M_DUMP_VISITOR);
         } else if (message instanceof SysexMessage) {
-            strMessage = decodeMessage((SysexMessage) message);
+            var m = decodeMessage((SysexMessage) message);
+            strMessage = m.accept(SYSEX_M_DUMP_VISITOR);
         } else if (message instanceof MetaMessage) {
             strMessage = decodeMessage((MetaMessage) message);
         } else {
@@ -75,19 +80,8 @@ public class MidiDecoder {
         }
     }
 
-    public String decodeMessage(SysexMessage message) {
-        byte[] abData = message.getData();
-        String strMessage = null;
-        // System.out.println("sysex status: " + message.getStatus());
-        if (message.getStatus() == SysexMessage.SYSTEM_EXCLUSIVE) {
-            strMessage = "Sysex message: F0" + getHexString(abData);
-        } else if (message.getStatus() == SysexMessage.SPECIAL_SYSTEM_EXCLUSIVE) {
-            strMessage = "Continued Sysex message F7" + getHexString(abData);
-            seByteCount--; // do not count the F7
-        }
-        seByteCount += abData.length + 1;
-        seCount++; // for the status byte
-        return strMessage;
+    public MidiSysexM decodeMessage(SysexMessage message) {
+        return new MidiDescribedSysexM(message);
     }
 
     public String decodeMessage(MetaMessage message) {
