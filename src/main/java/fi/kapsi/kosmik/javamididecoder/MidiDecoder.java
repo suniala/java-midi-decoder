@@ -2,13 +2,10 @@ package fi.kapsi.kosmik.javamididecoder;
 
 import javax.sound.midi.MetaMessage;
 import javax.sound.midi.MidiMessage;
-import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.SysexMessage;
-import java.io.PrintStream;
-import java.net.Socket;
 
-public class MidiDecoder implements Receiver {
+public class MidiDecoder {
     public static long seByteCount = 0;
     public static long smByteCount = 0;
     public static long seCount = 0;
@@ -57,30 +54,7 @@ public class MidiDecoder implements Receiver {
                     "30 frames/second (non-drop)",
             };
 
-    private PrintStream m_printStream;
-    private boolean m_bDebug;
-    private boolean m_bPrintTimeStampAsTicks;
-
-    public MidiDecoder(PrintStream printStream) {
-        this(printStream, false);
-    }
-
-    public MidiDecoder(PrintStream printStream,
-                       boolean bPrintTimeStampAsTicks) {
-        m_printStream = printStream;
-        m_bDebug = false;
-        m_bPrintTimeStampAsTicks = bPrintTimeStampAsTicks;
-
-        try {
-            Socket mySocket = new Socket("localhost", 34101);
-        } catch (Exception e) {
-        }
-    }
-
-    public void close() {
-    }
-
-    public void send(MidiMessage message, long lTimeStamp) {
+    public String decodeMessage(MidiMessage message) {
         String strMessage = null;
         if (message instanceof ShortMessage) {
             strMessage = decodeMessage((ShortMessage) message);
@@ -91,17 +65,7 @@ public class MidiDecoder implements Receiver {
         } else {
             strMessage = "unknown message type";
         }
-        String strTimeStamp = null;
-        if (m_bPrintTimeStampAsTicks) {
-            strTimeStamp = "tick " + lTimeStamp + ": ";
-        } else {
-            if (lTimeStamp == -1L) {
-                strTimeStamp = "timestamp [unknown]: ";
-            } else {
-                strTimeStamp = "timestamp " + lTimeStamp + " us: ";
-            }
-        }
-        m_printStream.println(strTimeStamp + strMessage);
+        return strMessage;
     }
 
     public String decodeMessage(ShortMessage message) {
