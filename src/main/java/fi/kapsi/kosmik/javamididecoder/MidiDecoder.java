@@ -55,7 +55,7 @@ public class MidiDecoder {
             };
 
     public String decodeMessage(MidiMessage message) {
-        String strMessage = null;
+        String strMessage;
         if (message instanceof ShortMessage) {
             strMessage = decodeMessage((ShortMessage) message);
         } else if (message instanceof SysexMessage) {
@@ -69,7 +69,7 @@ public class MidiDecoder {
     }
 
     public String decodeMessage(ShortMessage message) {
-        String strMessage = null;
+        String strMessage;
         switch (message.getCommand()) {
             case 0x80:
                 strMessage = "note Off " + getKeyName(message.getData1()) + " velocity: " + message.getData2();
@@ -155,10 +155,8 @@ public class MidiDecoder {
     }
 
     public String decodeMessage(MetaMessage message) {
-        byte[] abMessage = message.getMessage();
         byte[] abData = message.getData();
-        int nDataLength = message.getLength();
-        String strMessage = null;
+        String strMessage;
         switch (message.getType()) {
             case 0:
                 int nSequenceNumber = ((abData[0] & 0xFF) << 8) | (abData[1] & 0xFF);
@@ -215,7 +213,7 @@ public class MidiDecoder {
                         | (abData[2] & 0xFF);           // tempo in microseconds per beat
                 float bpm = convertTempo(nTempo);
                 // truncate it to 2 digits after dot
-                bpm = (float) (Math.round(bpm * 100.0f) / 100.0f);
+                bpm = Math.round(bpm * 100.0f) / 100.0f;
                 strMessage = "Set Tempo: " + bpm + " bpm";
                 break;
 
@@ -269,10 +267,6 @@ public class MidiDecoder {
         return (nLowerPart & 0x7F) | ((nHigherPart & 0x7F) << 7);
     }
 
-    private static int signedByteToUnsigned(byte b) {
-        return b & 0xFF;
-    }
-
     // convert from microseconds per quarter note to beats per minute and vice versa
     private static float convertTempo(float value) {
         if (value <= 0) {
@@ -281,7 +275,7 @@ public class MidiDecoder {
         return 60000000.0f / value;
     }
 
-    private static char hexDigits[] =
+    private static final char[] hexDigits =
             {'0', '1', '2', '3',
                     '4', '5', '6', '7',
                     '8', '9', 'A', 'B',
@@ -289,10 +283,10 @@ public class MidiDecoder {
 
     public static String getHexString(byte[] aByte) {
         StringBuffer sbuf = new StringBuffer(aByte.length * 3 + 2);
-        for (int i = 0; i < aByte.length; i++) {
+        for (byte b : aByte) {
             sbuf.append(' ');
-            sbuf.append(hexDigits[(aByte[i] & 0xF0) >> 4]);
-            sbuf.append(hexDigits[aByte[i] & 0x0F]);
+            sbuf.append(hexDigits[(b & 0xF0) >> 4]);
+            sbuf.append(hexDigits[b & 0x0F]);
 			/*byte	bhigh = (byte) ((aByte[i] &  0xf0) >> 4);
 			sbuf.append((char) (bhigh > 9 ? bhigh + 'A' - 10: bhigh + '0'));
 			byte	blow = (byte) (aByte[i] & 0x0f);
