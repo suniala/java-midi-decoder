@@ -13,7 +13,7 @@ import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiSongPositionM;
 import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiSongSelectM;
 import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiUnsupportedShortM;
 
-import static fi.kapsi.kosmik.javamididecoder.MidiDecoder.getHexString;
+import static fi.kapsi.kosmik.javamididecoder.util.Util.getHexString;
 import static java.lang.String.format;
 
 public class DescribingMidiShortMVisitor implements MidiShortMVisitor<String> {

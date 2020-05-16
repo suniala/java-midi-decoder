@@ -3,10 +3,22 @@ package fi.kapsi.kosmik.javamididecoder;
 import javax.sound.midi.ShortMessage;
 import java.util.Optional;
 
-import static fi.kapsi.kosmik.javamididecoder.MidiDecoder.get14bitValue;
-import static fi.kapsi.kosmik.javamididecoder.MidiDecoder.getKeyName;
+import static fi.kapsi.kosmik.javamididecoder.util.Util.get14bitValue;
 
 public abstract class MidiShortM extends MidiM<ShortMessage> {
+    private static final String[] keyNames =
+            {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
+
+    private static String getKeyName(int nKeyNumber) {
+        if (nKeyNumber > 127) {
+            throw new IllegalArgumentException("" + nKeyNumber);
+        } else {
+            var nNote = nKeyNumber % 12;
+            var nOctave = nKeyNumber / 12;
+            return keyNames[nNote] + (nOctave - 1);
+        }
+    }
+
     protected MidiShortM(ShortMessage m) {
         super(m);
     }

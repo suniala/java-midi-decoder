@@ -2,7 +2,7 @@ package fi.kapsi.kosmik.javamididecoder;
 
 import javax.sound.midi.MetaMessage;
 
-import static fi.kapsi.kosmik.javamididecoder.MidiDecoder.getHexString;
+import static fi.kapsi.kosmik.javamididecoder.util.Util.getHexString;
 import static java.lang.String.format;
 
 public abstract class MidiMetaM extends MidiM<MetaMessage> {
