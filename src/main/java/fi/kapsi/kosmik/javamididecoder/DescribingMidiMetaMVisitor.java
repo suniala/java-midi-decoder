@@ -17,17 +17,17 @@ import static java.lang.String.format;
 public class DescribingMidiMetaMVisitor implements MidiMetaMVisitor<String> {
     @Override
     public String visit(MidiSequenceNumberM m) {
-        return format("sequence number %d", m.number());
+        return format("sequence number %d", m.getNumber());
     }
 
     @Override
     public String visit(MidiMetaTextM m) {
-        return format("%s: %s", m.type().label.toLowerCase(), m.text());
+        return format("%s: %s", m.getType().label.toLowerCase(), m.getText());
     }
 
     @Override
     public String visit(MidiChannelPrefixM m) {
-        return format("channel prefix %d", m.prefix());
+        return format("channel prefix %d", m.getPrefix());
     }
 
     @Override
@@ -37,31 +37,31 @@ public class DescribingMidiMetaMVisitor implements MidiMetaMVisitor<String> {
 
     @Override
     public String visit(MidiTempoM m) {
-        return format("tempo %.2f bpm, %s microseconds per beat", m.bpm(), m.microsecondsPerBeat());
+        return format("tempo %.2f bpm, %s microseconds per beat", m.getBpm(), m.getMicrosecondsPerBeat());
     }
 
     @Override
     public String visit(MidiSMTPEOffsetM m) {
-        return format("%d:%d:%d.%d.%d", m.part1(), m.part2(), m.part3(), m.part4(), m.part5());
+        return format("%d:%d:%d.%d.%d", m.getPart1(), m.getPart2(), m.getPart3(), m.getPart4(), m.getPart5());
     }
 
     @Override
     public String visit(MidiTimeSignatureM m) {
-        return format("time signature %d/%d", m.timeSignature().beats(), m.timeSignature().unit());
+        return format("time signature %d/%d", m.getTimeSignature().beats(), m.getTimeSignature().unit());
     }
 
     @Override
     public String visit(MidiKeySignatureM m) {
-        return format("key signature %s", m.description());
+        return format("key signature %s", m.getDescription());
     }
 
     @Override
     public String visit(MidiSequencerSpecificMetaM m) {
-        return format("sequencer specific meta: %s", m.hexString());
+        return format("sequencer specific meta: %s", m.getHexString());
     }
 
     @Override
     public String visit(MidiUnsupportedMetaM m) {
-        return format("unsupported meta message: [%s]", m.hexString());
+        return format("unsupported meta message: [%s]", m.getHexString());
     }
 }

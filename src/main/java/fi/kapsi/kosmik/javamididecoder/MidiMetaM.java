@@ -1,8 +1,9 @@
 package fi.kapsi.kosmik.javamididecoder;
 
+import fi.kapsi.kosmik.javamididecoder.util.Util;
+
 import javax.sound.midi.MetaMessage;
 
-import static fi.kapsi.kosmik.javamididecoder.util.Util.getHexString;
 import static java.lang.String.format;
 
 public abstract class MidiMetaM extends MidiM<MetaMessage> {
@@ -46,7 +47,7 @@ public abstract class MidiMetaM extends MidiM<MetaMessage> {
             super(m);
         }
 
-        public int number() {
+        public int getNumber() {
             return ((dataCopy[0] & 0xFF) << 8) | (dataCopy[1] & 0xFF);
         }
 
@@ -80,11 +81,11 @@ public abstract class MidiMetaM extends MidiM<MetaMessage> {
             this.type = type;
         }
 
-        public MetaTextType type() {
+        public MetaTextType getType() {
             return type;
         }
 
-        public String text() {
+        public String getText() {
             return new String(dataCopy);
         }
 
@@ -99,7 +100,7 @@ public abstract class MidiMetaM extends MidiM<MetaMessage> {
             super(m);
         }
 
-        public int prefix() {
+        public int getPrefix() {
             return dataCopy[0] & 0xFF;
         }
 
@@ -125,14 +126,14 @@ public abstract class MidiMetaM extends MidiM<MetaMessage> {
             super(m);
         }
 
-        public int microsecondsPerBeat() {
+        public int getMicrosecondsPerBeat() {
             return ((dataCopy[0] & 0xFF) << 16)
                     | ((dataCopy[1] & 0xFF) << 8)
                     | (dataCopy[2] & 0xFF);
         }
 
-        public float bpm() {
-            float bpm = microsecondsPerBeatToBpm(microsecondsPerBeat());
+        public float getBpm() {
+            float bpm = microsecondsPerBeatToBpm(getMicrosecondsPerBeat());
             return Math.round(bpm * 100.0f) / 100.0f;
         }
 
@@ -154,23 +155,23 @@ public abstract class MidiMetaM extends MidiM<MetaMessage> {
             super(m);
         }
 
-        public int part1() {
+        public int getPart1() {
             return (dataCopy[0] & 0xFF);
         }
 
-        public int part2() {
+        public int getPart2() {
             return (dataCopy[1] & 0xFF);
         }
 
-        public int part3() {
+        public int getPart3() {
             return (dataCopy[2] & 0xFF);
         }
 
-        public int part4() {
+        public int getPart4() {
             return (dataCopy[3] & 0xFF);
         }
 
-        public int part5() {
+        public int getPart5() {
             return (dataCopy[4] & 0xFF);
         }
 
@@ -204,15 +205,15 @@ public abstract class MidiMetaM extends MidiM<MetaMessage> {
             super(m);
         }
 
-        public TimeSignature timeSignature() {
+        public TimeSignature getTimeSignature() {
             return new TimeSignature((dataCopy[0] & 0xFF), (1 << (dataCopy[1] & 0xFF)));
         }
 
-        public int midiClocksPerMetronomeTick() {
+        public int getMidiClocksPerMetronomeTick() {
             return (dataCopy[2] & 0xFF);
         }
 
-        public int demisemiquaversPer24MidiClocks() {
+        public int getDemisemiquaversPer24MidiClocks() {
             return (dataCopy[3] & 0xFF);
         }
 
@@ -230,7 +231,7 @@ public abstract class MidiMetaM extends MidiM<MetaMessage> {
             super(m);
         }
 
-        public String description() {
+        public String getDescription() {
             String type = (dataCopy[1] == 1) ? "minor" : "major";
             return format("%s %s", keySignatureNames[dataCopy[0] + 7], type);
         }
@@ -246,8 +247,8 @@ public abstract class MidiMetaM extends MidiM<MetaMessage> {
             super(m);
         }
 
-        public String hexString() {
-            return getHexString(dataCopy);
+        public String getHexString() {
+            return Util.getHexString(dataCopy);
         }
 
         @Override
@@ -261,8 +262,8 @@ public abstract class MidiMetaM extends MidiM<MetaMessage> {
             super(m);
         }
 
-        public String hexString() {
-            return getHexString(dataCopy);
+        public String getHexString() {
+            return Util.getHexString(dataCopy);
         }
 
         @Override

@@ -20,61 +20,61 @@ public class DescribingMidiShortMVisitor implements MidiShortMVisitor<String> {
     @Override
     public String visit(MidiNoteM m) {
         return format("channel %d, note %s %s, velocity %d",
-                m.channel(), m.keyName(), m.onOff, m.velocity());
+                m.getChannel(), m.getKeyName(), m.getOnOff(), m.getVelocity());
     }
 
     @Override
     public String visit(MidiPolyphonicKeyPressureM m) {
         return format("channel %d, note %s, polyphonic key pressure %d",
-                m.channel(), m.keyName(), m.pressure());
+                m.getChannel(), m.getKeyName(), m.getPressure());
     }
 
     @Override
     public String visit(MidiControlChangeM m) {
         return format("channel %d, control change %d, value %d",
-                m.channel(), m.controlChange(), m.value());
+                m.getChannel(), m.getControlChange(), m.getValue());
     }
 
     @Override
     public String visit(MidiProgramChangeM m) {
         return format("channel %d, program change %d",
-                m.channel(), m.programChange());
+                m.getChannel(), m.getProgramChange());
     }
 
     @Override
     public String visit(MidiKeyPressureM m) {
         return format("channel %d, note %s, key pressure %d",
-                m.channel(), m.keyName(), m.pressure());
+                m.getChannel(), m.getKeyName(), m.getPressure());
     }
 
     @Override
     public String visit(MidiPitchWheelChangeM m) {
         return format("channel %d, pitch wheel change %d",
-                m.channel(), m.value());
+                m.getChannel(), m.getValue());
     }
 
     @Override
     public String visit(MidiMTCQuarterFrameM m) {
         return format("mtc quarter frame, quarter frame type \"%s\", frame type \"%s\"",
-                m.quarterFrameDescription(), m.frameTypeDescription());
+                m.getQuarterFrameDescription(), m.getFrameTypeDescription());
     }
 
     @Override
     public String visit(MidiSongPositionM m) {
         return format("song position %d",
-                m.value());
+                m.getValue());
     }
 
     @Override
     public String visit(MidiSongSelectM m) {
         return format("song select %d",
-                m.value());
+                m.getValue());
     }
 
     @Override
     public String visit(MidiOtherSystemMessageM m) {
         return format("%s",
-                m.description());
+                m.getDescription());
     }
 
     @Override

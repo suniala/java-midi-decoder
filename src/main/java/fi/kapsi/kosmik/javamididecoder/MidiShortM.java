@@ -9,7 +9,7 @@ public abstract class MidiShortM extends MidiM<ShortMessage> {
     private static final String[] keyNames =
             {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
 
-    private static String getKeyName(int nKeyNumber) {
+    private static String keyName(int nKeyNumber) {
         if (nKeyNumber > 127) {
             throw new IllegalArgumentException("" + nKeyNumber);
         } else {
@@ -54,7 +54,7 @@ public abstract class MidiShortM extends MidiM<ShortMessage> {
             super(m);
         }
 
-        public int channel() {
+        public int getChannel() {
             return m.getChannel() + 1;
         }
     }
@@ -62,18 +62,22 @@ public abstract class MidiShortM extends MidiM<ShortMessage> {
     public static class MidiNoteM extends MidiChannelM {
         public enum OnOff {on, off}
 
-        public final MidiNoteM.OnOff onOff;
+        private final MidiNoteM.OnOff onOff;
 
         public MidiNoteM(ShortMessage m, MidiNoteM.OnOff onOff) {
             super(m);
             this.onOff = onOff;
         }
 
-        public String keyName() {
-            return getKeyName(m.getData1());
+        public OnOff getOnOff() {
+            return onOff;
         }
 
-        public int velocity() {
+        public String getKeyName() {
+            return keyName(m.getData1());
+        }
+
+        public int getVelocity() {
             return m.getData2();
         }
 
@@ -88,11 +92,11 @@ public abstract class MidiShortM extends MidiM<ShortMessage> {
             super(m);
         }
 
-        public String keyName() {
-            return getKeyName(m.getData1());
+        public String getKeyName() {
+            return keyName(m.getData1());
         }
 
-        public int pressure() {
+        public int getPressure() {
             return m.getData2();
         }
 
@@ -107,11 +111,11 @@ public abstract class MidiShortM extends MidiM<ShortMessage> {
             super(m);
         }
 
-        public int controlChange() {
+        public int getControlChange() {
             return m.getData1();
         }
 
-        public int value() {
+        public int getValue() {
             return m.getData2();
         }
 
@@ -126,7 +130,7 @@ public abstract class MidiShortM extends MidiM<ShortMessage> {
             super(m);
         }
 
-        public int programChange() {
+        public int getProgramChange() {
             return m.getData1();
         }
 
@@ -141,11 +145,11 @@ public abstract class MidiShortM extends MidiM<ShortMessage> {
             super(m);
         }
 
-        public String keyName() {
-            return getKeyName(m.getData1());
+        public String getKeyName() {
+            return keyName(m.getData1());
         }
 
-        public int pressure() {
+        public int getPressure() {
             return m.getData2();
         }
 
@@ -160,7 +164,7 @@ public abstract class MidiShortM extends MidiM<ShortMessage> {
             super(m);
         }
 
-        public int value() {
+        public int getValue() {
             return get14bitValue(m.getData1(), m.getData2());
         }
 
@@ -233,11 +237,11 @@ public abstract class MidiShortM extends MidiM<ShortMessage> {
                     : Optional.empty();
         }
 
-        public String quarterFrameDescription() {
+        public String getQuarterFrameDescription() {
             return this.quarterFrameDescription;
         }
 
-        public Optional<String> frameTypeDescription() {
+        public Optional<String> getFrameTypeDescription() {
             return frameTypeDescription;
         }
 
@@ -252,7 +256,7 @@ public abstract class MidiShortM extends MidiM<ShortMessage> {
             super(m);
         }
 
-        public int value() {
+        public int getValue() {
             return get14bitValue(m.getData1(), m.getData2());
         }
 
@@ -267,7 +271,7 @@ public abstract class MidiShortM extends MidiM<ShortMessage> {
             super(m);
         }
 
-        public int value() {
+        public int getValue() {
             return m.getData1();
         }
 
@@ -282,7 +286,7 @@ public abstract class MidiShortM extends MidiM<ShortMessage> {
             super(m);
         }
 
-        public String description() {
+        public String getDescription() {
             return SYSTEM_MESSAGE_TEXT[m.getChannel()];
         }
 
