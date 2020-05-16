@@ -1,5 +1,18 @@
 package fi.kapsi.kosmik.javamididecoder;
 
+import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiControlChangeM;
+import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiKeyPressureM;
+import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiMTCQuarterFrameM;
+import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiNoteM;
+import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiOtherSystemMessageM;
+import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiPitchWheelChangeM;
+import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiPolyphonicKeyPressureM;
+import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiProgramChangeM;
+import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiShortMVisitor;
+import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiSongPositionM;
+import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiSongSelectM;
+import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiUnsupportedShortM;
+
 import javax.sound.midi.MetaMessage;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.ShortMessage;
@@ -7,57 +20,19 @@ import javax.sound.midi.SysexMessage;
 
 public class MidiDecoder {
     public static long seByteCount = 0;
-    public static long smByteCount = 0;
     public static long seCount = 0;
-    public static long smCount = 0;
 
     private static final String[] sm_astrKeyNames = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
 
     private static final String[] sm_astrKeySignatures = {"Cb", "Gb", "Db", "Ab", "Eb", "Bb", "F", "C", "G", "D", "A", "E", "B", "F#", "C#"};
-    private static final String[] SYSTEM_MESSAGE_TEXT =
-            {
-                    "System Exclusive (should not be in ShortMessage!)",
-                    "MTC Quarter Frame: ",
-                    "Song Position: ",
-                    "Song Select: ",
-                    "Undefined",
-                    "Undefined",
-                    "Tune Request",
-                    "End of SysEx (should not be in ShortMessage!)",
-                    "Timing clock",
-                    "Undefined",
-                    "Start",
-                    "Continue",
-                    "Stop",
-                    "Undefined",
-                    "Active Sensing",
-                    "System Reset"
-            };
 
-    private static final String[] QUARTER_FRAME_MESSAGE_TEXT =
-            {
-                    "frame count LS: ",
-                    "frame count MS: ",
-                    "seconds count LS: ",
-                    "seconds count MS: ",
-                    "minutes count LS: ",
-                    "minutes count MS: ",
-                    "hours count LS: ",
-                    "hours count MS: "
-            };
-
-    private static final String[] FRAME_TYPE_TEXT =
-            {
-                    "24 frames/second",
-                    "25 frames/second",
-                    "30 frames/second (drop)",
-                    "30 frames/second (non-drop)",
-            };
+    public static final MidiShortMVisitor<String> SHORT_M_DUMP_VISITOR = new StringMidiShortMVisitor();
 
     public String decodeMessage(MidiMessage message) {
         String strMessage;
         if (message instanceof ShortMessage) {
-            strMessage = decodeMessage((ShortMessage) message);
+            var m = decodeMessage((ShortMessage) message);
+            strMessage = m.accept(SHORT_M_DUMP_VISITOR);
         } else if (message instanceof SysexMessage) {
             strMessage = decodeMessage((SysexMessage) message);
         } else if (message instanceof MetaMessage) {
@@ -68,75 +43,36 @@ public class MidiDecoder {
         return strMessage;
     }
 
-    public String decodeMessage(ShortMessage message) {
-        String strMessage;
+    public MidiShortM decodeMessage(ShortMessage message) {
         switch (message.getCommand()) {
             case 0x80:
-                strMessage = "note Off " + getKeyName(message.getData1()) + " velocity: " + message.getData2();
-                break;
-
+                return new MidiNoteM(message, MidiNoteM.OnOff.off);
             case 0x90:
-                strMessage = "note On " + getKeyName(message.getData1()) + " velocity: " + message.getData2();
-                break;
-
+                return new MidiNoteM(message, MidiNoteM.OnOff.on);
             case 0xa0:
-                strMessage = "polyphonic key pressure " + getKeyName(message.getData1()) + " pressure: " + message.getData2();
-                break;
-
+                return new MidiPolyphonicKeyPressureM(message);
             case 0xb0:
-                strMessage = "control change " + message.getData1() + " value: " + message.getData2();
-                break;
-
+                return new MidiControlChangeM(message);
             case 0xc0:
-                strMessage = "program change " + message.getData1();
-                break;
-
+                return new MidiProgramChangeM(message);
             case 0xd0:
-                strMessage = "key pressure " + getKeyName(message.getData1()) + " pressure: " + message.getData2();
-                break;
-
+                return new MidiKeyPressureM(message);
             case 0xe0:
-                strMessage = "pitch wheel change " + get14bitValue(message.getData1(), message.getData2());
-                break;
-
+                return new MidiPitchWheelChangeM(message);
             case 0xF0:
-                strMessage = SYSTEM_MESSAGE_TEXT[message.getChannel()];
                 switch (message.getChannel()) {
                     case 0x1:
-                        int nQType = (message.getData1() & 0x70) >> 4;
-                        int nQData = message.getData1() & 0x0F;
-                        if (nQType == 7) {
-                            nQData = nQData & 0x1;
-                        }
-                        strMessage += QUARTER_FRAME_MESSAGE_TEXT[nQType] + nQData;
-                        if (nQType == 7) {
-                            int nFrameType = (message.getData1() & 0x06) >> 1;
-                            strMessage += ", frame type: " + FRAME_TYPE_TEXT[nFrameType];
-                        }
-                        break;
-
+                        return new MidiMTCQuarterFrameM(message);
                     case 0x2:
-                        strMessage += get14bitValue(message.getData1(), message.getData2());
-                        break;
-
+                        return new MidiSongPositionM(message);
                     case 0x3:
-                        strMessage += message.getData1();
-                        break;
+                        return new MidiSongSelectM(message);
+                    default:
+                        return new MidiOtherSystemMessageM(message);
                 }
-                break;
-
             default:
-                strMessage = "unknown message: status = " + message.getStatus() + ", byte1 = " + message.getData1() + ", byte2 = " + message.getData2();
-                break;
+                return new MidiUnsupportedShortM(message);
         }
-        if (message.getCommand() != 0xF0) {
-            int nChannel = message.getChannel() + 1;
-            String strChannel = "channel " + nChannel + ": ";
-            strMessage = strChannel + strMessage;
-        }
-        smCount++;
-        smByteCount += message.getLength();
-        return "[" + getHexString(message) + "] " + strMessage;
     }
 
     public String decodeMessage(SysexMessage message) {
@@ -255,7 +191,7 @@ public class MidiDecoder {
 
     public static String getKeyName(int nKeyNumber) {
         if (nKeyNumber > 127) {
-            return "illegal value";
+            throw new IllegalArgumentException("" + nKeyNumber);
         } else {
             int nNote = nKeyNumber % 12;
             int nOctave = nKeyNumber / 12;
