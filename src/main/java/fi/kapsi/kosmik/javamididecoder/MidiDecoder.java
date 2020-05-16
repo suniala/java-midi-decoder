@@ -28,7 +28,7 @@ public class MidiDecoder {
 
     private static final String[] sm_astrKeySignatures = {"Cb", "Gb", "Db", "Ab", "Eb", "Bb", "F", "C", "G", "D", "A", "E", "B", "F#", "C#"};
 
-    public static final MidiShortMVisitor<String> SHORT_M_DUMP_VISITOR = new StringMidiShortMVisitor();
+    public static final MidiShortMVisitor<String> SHORT_M_DUMP_VISITOR = new DescribingMidiShortMVisitor();
 
     private static final MidiSysexMVisitor<String> SYSEX_M_DUMP_VISITOR = new DescribingMidiSysexMVisitor();
 

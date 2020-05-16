@@ -16,7 +16,7 @@ import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiUnsupportedShortM;
 import static fi.kapsi.kosmik.javamididecoder.MidiDecoder.getHexString;
 import static java.lang.String.format;
 
-public class StringMidiShortMVisitor implements MidiShortMVisitor<String> {
+public class DescribingMidiShortMVisitor implements MidiShortMVisitor<String> {
     @Override
     public String visit(MidiNoteM m) {
         return format("channel %d, note %s %s, velocity %d",
