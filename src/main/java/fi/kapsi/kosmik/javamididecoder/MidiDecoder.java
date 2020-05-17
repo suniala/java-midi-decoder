@@ -3,7 +3,6 @@ package fi.kapsi.kosmik.javamididecoder;
 import fi.kapsi.kosmik.javamididecoder.MidiMetaM.MidiChannelPrefixM;
 import fi.kapsi.kosmik.javamididecoder.MidiMetaM.MidiEndOfTrackM;
 import fi.kapsi.kosmik.javamididecoder.MidiMetaM.MidiKeySignatureM;
-import fi.kapsi.kosmik.javamididecoder.MidiMetaM.MidiMetaMVisitor;
 import fi.kapsi.kosmik.javamididecoder.MidiMetaM.MidiMetaTextM;
 import fi.kapsi.kosmik.javamididecoder.MidiMetaM.MidiMetaTextM.MetaTextType;
 import fi.kapsi.kosmik.javamididecoder.MidiMetaM.MidiSMTPEOffsetM;
@@ -20,12 +19,10 @@ import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiOtherSystemMessageM;
 import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiPitchWheelChangeM;
 import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiPolyphonicKeyPressureM;
 import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiProgramChangeM;
-import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiShortMVisitor;
 import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiSongPositionM;
 import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiSongSelectM;
 import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiUnsupportedShortM;
 import fi.kapsi.kosmik.javamididecoder.MidiSysexM.MidiDescribedSysexM;
-import fi.kapsi.kosmik.javamididecoder.MidiSysexM.MidiSysexMVisitor;
 
 import javax.sound.midi.MetaMessage;
 import javax.sound.midi.MidiMessage;
@@ -33,30 +30,19 @@ import javax.sound.midi.ShortMessage;
 import javax.sound.midi.SysexMessage;
 
 public class MidiDecoder {
-    public static final MidiShortMVisitor<String> SHORT_M_DUMP_VISITOR = new DescribingMidiShortMVisitor();
-
-    private static final MidiSysexMVisitor<String> SYSEX_M_DUMP_VISITOR = new DescribingMidiSysexMVisitor();
-
-    private static final MidiMetaMVisitor<String> META_M_DUMP_VISITOR = new DescribingMidiMetaMVisitor();
-
-    public String decodeMessage(MidiMessage message) {
-        String strMessage;
+    public static MidiM<?> decodeMessage(MidiMessage message) {
         if (message instanceof ShortMessage) {
-            var m = decodeMessage((ShortMessage) message);
-            strMessage = m.accept(SHORT_M_DUMP_VISITOR);
+            return decodeMessage((ShortMessage) message);
         } else if (message instanceof SysexMessage) {
-            var m = decodeMessage((SysexMessage) message);
-            strMessage = m.accept(SYSEX_M_DUMP_VISITOR);
+            return decodeMessage((SysexMessage) message);
         } else if (message instanceof MetaMessage) {
-            var m = decodeMessage((MetaMessage) message);
-            strMessage = m.accept(META_M_DUMP_VISITOR);
+            return decodeMessage((MetaMessage) message);
         } else {
             throw new IllegalArgumentException("Unsupported message type: " + message.getClass());
         }
-        return strMessage;
     }
 
-    public MidiShortM decodeMessage(ShortMessage message) {
+    public static MidiShortM decodeMessage(ShortMessage message) {
         switch (message.getCommand()) {
             case 0x80:
                 return new MidiNoteM(message, MidiNoteM.OnOff.off);
@@ -88,11 +74,11 @@ public class MidiDecoder {
         }
     }
 
-    public MidiSysexM decodeMessage(SysexMessage message) {
+    public static MidiSysexM decodeMessage(SysexMessage message) {
         return new MidiDescribedSysexM(message);
     }
 
-    public MidiMetaM decodeMessage(MetaMessage message) {
+    public static MidiMetaM decodeMessage(MetaMessage message) {
         switch (message.getType()) {
             case 0:
                 return new MidiSequenceNumberM(message);
