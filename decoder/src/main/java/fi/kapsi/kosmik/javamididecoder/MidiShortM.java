@@ -3,7 +3,7 @@ package fi.kapsi.kosmik.javamididecoder;
 import javax.sound.midi.ShortMessage;
 import java.util.Optional;
 
-import static fi.kapsi.kosmik.javamididecoder.util.Util.get14bitValue;
+import static fi.kapsi.kosmik.javamididecoder.Util.get14bitValue;
 
 public abstract class MidiShortM extends MidiM<ShortMessage> {
     private static final String[] keyNames =

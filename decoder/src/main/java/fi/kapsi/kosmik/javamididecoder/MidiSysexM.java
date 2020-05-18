@@ -3,7 +3,7 @@ package fi.kapsi.kosmik.javamididecoder;
 import javax.sound.midi.SysexMessage;
 import java.util.Optional;
 
-import static fi.kapsi.kosmik.javamididecoder.util.Util.getHexString;
+import static fi.kapsi.kosmik.javamididecoder.Util.getHexString;
 
 public abstract class MidiSysexM extends MidiM<SysexMessage> {
     protected MidiSysexM(SysexMessage m) {

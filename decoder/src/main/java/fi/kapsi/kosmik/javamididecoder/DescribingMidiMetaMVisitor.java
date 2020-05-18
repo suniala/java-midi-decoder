@@ -12,7 +12,7 @@ import fi.kapsi.kosmik.javamididecoder.MidiMetaM.MidiTempoM;
 import fi.kapsi.kosmik.javamididecoder.MidiMetaM.MidiTimeSignatureM;
 import fi.kapsi.kosmik.javamididecoder.MidiMetaM.MidiUnsupportedMetaM;
 
-import static fi.kapsi.kosmik.javamididecoder.util.Util.getHexString;
+import static fi.kapsi.kosmik.javamididecoder.Util.getHexString;
 import static java.lang.String.format;
 
 public class DescribingMidiMetaMVisitor implements MidiMetaMVisitor<String> {

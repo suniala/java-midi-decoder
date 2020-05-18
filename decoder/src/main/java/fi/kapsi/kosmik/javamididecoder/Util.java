@@ -1,19 +1,19 @@
-package fi.kapsi.kosmik.javamididecoder.util;
+package fi.kapsi.kosmik.javamididecoder;
 
 import javax.sound.midi.ShortMessage;
 
-public class Util {
+/* package-private */ class Util {
     private static final char[] hexDigits =
             {'0', '1', '2', '3',
                     '4', '5', '6', '7',
                     '8', '9', 'A', 'B',
                     'C', 'D', 'E', 'F'};
 
-    public static int get14bitValue(int nLowerPart, int nHigherPart) {
+    static int get14bitValue(int nLowerPart, int nHigherPart) {
         return (nLowerPart & 0x7F) | ((nHigherPart & 0x7F) << 7);
     }
 
-    public static String getHexString(byte[] aByte) {
+    static String getHexString(byte[] aByte) {
         StringBuffer sbuf = new StringBuffer(aByte.length * 3 + 2);
         for (byte b : aByte) {
             sbuf.append(' ');
@@ -27,7 +27,7 @@ public class Util {
         return new String(sbuf);
     }
 
-    public static String getHexString(ShortMessage sm) {
+    static String getHexString(ShortMessage sm) {
         // bug in J2SDK 1.4.1
         // return getHexString(sm.getMessage());
         int status = sm.getStatus();
