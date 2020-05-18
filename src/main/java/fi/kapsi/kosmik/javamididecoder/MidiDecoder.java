@@ -1,5 +1,10 @@
 package fi.kapsi.kosmik.javamididecoder;
 
+import javax.sound.midi.MetaMessage;
+import javax.sound.midi.MidiMessage;
+import javax.sound.midi.ShortMessage;
+import javax.sound.midi.SysexMessage;
+
 import fi.kapsi.kosmik.javamididecoder.MidiMetaM.MidiChannelPrefixM;
 import fi.kapsi.kosmik.javamididecoder.MidiMetaM.MidiEndOfTrackM;
 import fi.kapsi.kosmik.javamididecoder.MidiMetaM.MidiKeySignatureM;
@@ -14,7 +19,8 @@ import fi.kapsi.kosmik.javamididecoder.MidiMetaM.MidiUnsupportedMetaM;
 import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiControlChangeM;
 import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiKeyPressureM;
 import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiMTCQuarterFrameM;
-import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiNoteM;
+import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiNoteOffM;
+import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiNoteOnM;
 import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiOtherSystemMessageM;
 import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiPitchWheelChangeM;
 import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiPolyphonicKeyPressureM;
@@ -23,11 +29,6 @@ import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiSongPositionM;
 import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiSongSelectM;
 import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiUnsupportedShortM;
 import fi.kapsi.kosmik.javamididecoder.MidiSysexM.MidiDescribedSysexM;
-
-import javax.sound.midi.MetaMessage;
-import javax.sound.midi.MidiMessage;
-import javax.sound.midi.ShortMessage;
-import javax.sound.midi.SysexMessage;
 
 public class MidiDecoder {
     public static MidiM<?> decodeMessage(MidiMessage message) {
@@ -45,9 +46,9 @@ public class MidiDecoder {
     public static MidiShortM decodeMessage(ShortMessage message) {
         switch (message.getCommand()) {
             case 0x80:
-                return new MidiNoteM(message, MidiNoteM.OnOff.off);
+                return new MidiNoteOnM(message);
             case 0x90:
-                return new MidiNoteM(message, MidiNoteM.OnOff.on);
+                return new MidiNoteOffM(message);
             case 0xa0:
                 return new MidiPolyphonicKeyPressureM(message);
             case 0xb0:

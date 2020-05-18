@@ -1,6 +1,7 @@
 package fi.kapsi.kosmik.javamididecoder;
 
 import javax.sound.midi.ShortMessage;
+
 import java.util.Optional;
 
 import static fi.kapsi.kosmik.javamididecoder.util.Util.get14bitValue;
@@ -26,7 +27,9 @@ public abstract class MidiShortM extends MidiM<ShortMessage> {
     public abstract <T> T accept(MidiShortMVisitor<T> visitor);
 
     public interface MidiShortMVisitor<T> {
-        T visit(MidiNoteM m);
+        T visit(MidiNoteOnM m);
+
+        T visit(MidiNoteOffM m);
 
         T visit(MidiPolyphonicKeyPressureM m);
 
@@ -59,26 +62,54 @@ public abstract class MidiShortM extends MidiM<ShortMessage> {
         }
     }
 
-    public static class MidiNoteM extends MidiChannelM {
-        public enum OnOff {on, off}
-
-        private final MidiNoteM.OnOff onOff;
-
-        public MidiNoteM(ShortMessage m, MidiNoteM.OnOff onOff) {
+    public abstract static class MidiNoteM extends MidiChannelM {
+        public MidiNoteM(ShortMessage m) {
             super(m);
-            this.onOff = onOff;
         }
 
-        public OnOff getOnOff() {
-            return onOff;
+        public abstract boolean isOn();
+
+        public boolean isOff() {
+            return !isOn();
         }
 
-        public String getKeyName() {
+        public int getNote() {
+            return m.getData1();
+        }
+
+        public String getNoteDescription() {
             return keyName(m.getData1());
         }
 
         public int getVelocity() {
             return m.getData2();
+        }
+    }
+
+    public static class MidiNoteOnM extends MidiNoteM {
+        public MidiNoteOnM(ShortMessage m) {
+            super(m);
+        }
+
+        @Override
+        public boolean isOn() {
+            return true;
+        }
+
+        @Override
+        public <T> T accept(MidiShortMVisitor<T> visitor) {
+            return visitor.visit(this);
+        }
+    }
+
+    public static class MidiNoteOffM extends MidiNoteM {
+        public MidiNoteOffM(ShortMessage m) {
+            super(m);
+        }
+
+        @Override
+        public boolean isOn() {
+            return false;
         }
 
         @Override

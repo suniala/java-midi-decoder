@@ -4,6 +4,8 @@ import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiControlChangeM;
 import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiKeyPressureM;
 import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiMTCQuarterFrameM;
 import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiNoteM;
+import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiNoteOffM;
+import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiNoteOnM;
 import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiOtherSystemMessageM;
 import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiPitchWheelChangeM;
 import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiPolyphonicKeyPressureM;
@@ -17,10 +19,19 @@ import static fi.kapsi.kosmik.javamididecoder.util.Util.getHexString;
 import static java.lang.String.format;
 
 public class DescribingMidiShortMVisitor implements MidiShortMVisitor<String> {
+    private static String visitNote(MidiNoteM m) {
+        return format("channel %d, note %d (%s) %s, velocity %d",
+                m.getChannel(), m.getNote(), m.getNoteDescription(), m.isOn() ? "on" : "off", m.getVelocity());
+    }
+
     @Override
-    public String visit(MidiNoteM m) {
-        return format("channel %d, note %s %s, velocity %d",
-                m.getChannel(), m.getKeyName(), m.getOnOff(), m.getVelocity());
+    public String visit(MidiNoteOnM m) {
+        return visitNote(m);
+    }
+
+    @Override
+    public String visit(MidiNoteOffM m) {
+        return visitNote(m);
     }
 
     @Override
