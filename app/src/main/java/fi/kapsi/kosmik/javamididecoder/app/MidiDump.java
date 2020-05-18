@@ -1,7 +1,7 @@
-package fi.kapsi.kosmik.javamididecoder;
+package fi.kapsi.kosmik.javamididecoder.app;
 
+import fi.kapsi.kosmik.javamididecoder.DescribingMidiMVisitor;
 import fi.kapsi.kosmik.javamididecoder.MidiM.MidiMVisitor;
-import fi.kapsi.kosmik.javamididecoder.util.Util;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiMessage;
@@ -10,6 +10,8 @@ import java.io.File;
 import java.io.IOException;
 
 import static fi.kapsi.kosmik.javamididecoder.MidiDecoder.decodeMessage;
+import static fi.kapsi.kosmik.javamididecoder.app.Util.produceWithIndex;
+import static fi.kapsi.kosmik.javamididecoder.app.Util.zipWithIndex;
 
 public class MidiDump {
     public static void main(String[] args) throws InvalidMidiDataException, IOException {
@@ -17,10 +19,10 @@ public class MidiDump {
             System.err.println("Please give a path to a midi file.");
         } else {
             var sequence = MidiSystem.getSequence(new File(args[0]));
-            Util.zipWithIndex(sequence.getTracks())
+            zipWithIndex(sequence.getTracks())
                     .forEach(it -> {
                         System.out.println("track: " + it._1);
-                        Util.produceWithIndex(it._2::get)
+                        produceWithIndex(it._2::get)
                                 .limit(it._2.size() - 1)
                                 .forEach(im -> {
                                     String formattedMessage = format(im._2.getMessage());

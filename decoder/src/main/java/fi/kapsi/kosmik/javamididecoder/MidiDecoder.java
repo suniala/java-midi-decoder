@@ -1,10 +1,5 @@
 package fi.kapsi.kosmik.javamididecoder;
 
-import javax.sound.midi.MetaMessage;
-import javax.sound.midi.MidiMessage;
-import javax.sound.midi.ShortMessage;
-import javax.sound.midi.SysexMessage;
-
 import fi.kapsi.kosmik.javamididecoder.MidiMetaM.MidiChannelPrefixM;
 import fi.kapsi.kosmik.javamididecoder.MidiMetaM.MidiEndOfTrackM;
 import fi.kapsi.kosmik.javamididecoder.MidiMetaM.MidiKeySignatureM;
@@ -29,6 +24,11 @@ import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiSongPositionM;
 import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiSongSelectM;
 import fi.kapsi.kosmik.javamididecoder.MidiShortM.MidiUnsupportedShortM;
 import fi.kapsi.kosmik.javamididecoder.MidiSysexM.MidiDescribedSysexM;
+
+import javax.sound.midi.MetaMessage;
+import javax.sound.midi.MidiMessage;
+import javax.sound.midi.ShortMessage;
+import javax.sound.midi.SysexMessage;
 
 public class MidiDecoder {
     public static MidiM<?> decodeMessage(MidiMessage message) {

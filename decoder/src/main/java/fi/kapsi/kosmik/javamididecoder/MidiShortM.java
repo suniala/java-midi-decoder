@@ -1,7 +1,6 @@
 package fi.kapsi.kosmik.javamididecoder;
 
 import javax.sound.midi.ShortMessage;
-
 import java.util.Optional;
 
 import static fi.kapsi.kosmik.javamididecoder.util.Util.get14bitValue;
