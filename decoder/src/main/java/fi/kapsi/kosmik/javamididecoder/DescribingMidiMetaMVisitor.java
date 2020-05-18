@@ -48,7 +48,7 @@ public class DescribingMidiMetaMVisitor implements MidiMetaMVisitor<String> {
 
     @Override
     public String visit(MidiTimeSignatureM m) {
-        return format("time signature %d/%d", m.getTimeSignature().beats(), m.getTimeSignature().unit());
+        return format("time signature %d/%d", m.getTimeSignature().getBeats(), m.getTimeSignature().getUnit());
     }
 
     @Override

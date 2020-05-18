@@ -190,11 +190,11 @@ public abstract class MidiMetaM extends MidiM<MetaMessage> {
                 this.unit = unit;
             }
 
-            public int beats() {
+            public int getBeats() {
                 return beats;
             }
 
-            public int unit() {
+            public int getUnit() {
                 return unit;
             }
         }
