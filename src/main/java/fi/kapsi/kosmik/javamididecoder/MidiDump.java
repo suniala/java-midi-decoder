@@ -16,7 +16,6 @@ public class MidiDump {
         if (args == null || args.length < 1) {
             System.err.println("Please give a path to a midi file.");
         } else {
-            MidiDecoder midiDecoder = new MidiDecoder();
             var sequence = MidiSystem.getSequence(new File(args[0]));
             Util.zipWithIndex(sequence.getTracks())
                     .forEach(it -> {
