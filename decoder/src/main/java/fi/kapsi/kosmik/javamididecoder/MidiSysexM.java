@@ -33,7 +33,7 @@ public abstract class MidiSysexM extends MidiM<SysexMessage> {
             this.description = Optional.ofNullable(description);
         }
 
-        public Optional<String> description() {
+        public Optional<String> getDescription() {
             return description;
         }
 

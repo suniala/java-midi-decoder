@@ -13,7 +13,7 @@ public abstract class MidiM<T extends MidiMessage> {
         this.m = m;
     }
 
-    public T rawMessage() {
+    public T getRawMessage() {
         return m;
     }
 

@@ -8,6 +8,6 @@ import static java.lang.String.format;
 public class DescribingMidiSysexMVisitor implements MidiSysexMVisitor<String> {
     @Override
     public String visit(MidiDescribedSysexM m) {
-        return format("sysex: %s", m.description().orElse("no description available"));
+        return format("sysex: %s", m.getDescription().orElse("no description available"));
     }
 }
