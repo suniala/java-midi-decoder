@@ -28,3 +28,7 @@ void printTimeSignature(MidiTimeSignatureM m) {
     System.out.println(m.getTimeSignature().getBeats() + "/" + m.getTimeSignature().getUnit());
 }
 ```
+
+## Related Projects
+* http://www.jfugue.org enables "Music Programming for Java™ and JVM Languages"
+* https://github.com/suniala/midi-tuutti uses this library
