@@ -45,19 +45,19 @@ public class MidiDecoder {
 
     public static MidiShortM decodeMessage(ShortMessage message) {
         switch (message.getCommand()) {
-            case 0x80:
+            case ShortMessage.NOTE_OFF:
                 return new MidiNoteOffM(message);
-            case 0x90:
+            case ShortMessage.NOTE_ON:
                 return new MidiNoteOnM(message);
-            case 0xa0:
+            case ShortMessage.POLY_PRESSURE:
                 return new MidiPolyphonicKeyPressureM(message);
-            case 0xb0:
+            case ShortMessage.CONTROL_CHANGE:
                 return new MidiControlChangeM(message);
-            case 0xc0:
+            case ShortMessage.PROGRAM_CHANGE:
                 return new MidiProgramChangeM(message);
-            case 0xd0:
+            case ShortMessage.CHANNEL_PRESSURE:
                 return new MidiKeyPressureM(message);
-            case 0xe0:
+            case ShortMessage.PITCH_BEND:
                 return new MidiPitchWheelChangeM(message);
             case 0xF0:
                 switch (message.getChannel()) {
