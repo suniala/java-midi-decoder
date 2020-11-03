@@ -46,9 +46,9 @@ public class MidiDecoder {
     public static MidiShortM decodeMessage(ShortMessage message) {
         switch (message.getCommand()) {
             case 0x80:
-                return new MidiNoteOnM(message);
-            case 0x90:
                 return new MidiNoteOffM(message);
+            case 0x90:
+                return new MidiNoteOnM(message);
             case 0xa0:
                 return new MidiPolyphonicKeyPressureM(message);
             case 0xb0:
