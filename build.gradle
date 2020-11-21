@@ -1,8 +1,22 @@
 group 'fi.kapsi.kosmik'
-version '0.1.2-SNAPSHOT'
+version '0.2.0-SNAPSHOT'
 
 subprojects {
     apply plugin: 'java'
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(15)
+        }
+    }
+
+    tasks.withType(JavaCompile).each {
+        it.options.compilerArgs.add('--enable-preview')
+    }
+
+    compileJava {
+        options.release = 15
+    }
 
     repositories {
         mavenCentral()
