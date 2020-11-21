@@ -48,8 +48,8 @@ public class DescribingMidiShortMVisitor implements MidiShortMVisitor<String> {
 
     @Override
     public String visit(MidiProgramChangeM m) {
-        return format("channel %d, program change %d",
-                m.getChannel(), m.getProgramChange());
+        return format("channel %d, program change %d %s",
+                m.getChannel(), m.getDisplayValue(), m.getGMInstrumentName());
     }
 
     @Override

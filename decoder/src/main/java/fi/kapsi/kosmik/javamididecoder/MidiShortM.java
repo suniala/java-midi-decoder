@@ -4,6 +4,7 @@ import javax.sound.midi.ShortMessage;
 import java.util.Optional;
 
 import static fi.kapsi.kosmik.javamididecoder.Util.get14bitValue;
+import static fi.kapsi.kosmik.javamididecoder.Util.getGMInstrumentNameForProgramChangeInternalValue;
 
 public abstract class MidiShortM extends MidiM<ShortMessage> {
     private static final String[] keyNames =
@@ -160,8 +161,16 @@ public abstract class MidiShortM extends MidiM<ShortMessage> {
             super(m);
         }
 
-        public int getProgramChange() {
+        public int getInternalValue() {
             return m.getData1();
+        }
+
+        public int getDisplayValue() {
+            return getInternalValue() + 1;
+        }
+
+        public String getGMInstrumentName() {
+            return getGMInstrumentNameForProgramChangeInternalValue(getInternalValue());
         }
 
         @Override
