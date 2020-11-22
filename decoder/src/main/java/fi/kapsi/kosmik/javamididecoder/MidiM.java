@@ -18,12 +18,12 @@ public abstract class MidiM<T extends MidiMessage> {
     }
 
     public <V> V accept(MidiMVisitor<V> visitor) {
-        if (this instanceof MidiShortM) {
-            return ((MidiShortM) this).accept(visitor.gShortMVisitor());
-        } else if (this instanceof MidiSysexM) {
-            return ((MidiSysexM) this).accept(visitor.getSysexMVisitor());
-        } else if (this instanceof MidiMetaM) {
-            return ((MidiMetaM) this).accept(visitor.getMetaMVisitor());
+        if (this instanceof MidiShortM sm) {
+            return (sm).accept(visitor.gShortMVisitor());
+        } else if (this instanceof MidiSysexM sm) {
+            return (sm).accept(visitor.getSysexMVisitor());
+        } else if (this instanceof MidiMetaM mm) {
+            return (mm).accept(visitor.getMetaMVisitor());
         }
         throw new IllegalArgumentException("Not supported: " + m.getClass());
     }

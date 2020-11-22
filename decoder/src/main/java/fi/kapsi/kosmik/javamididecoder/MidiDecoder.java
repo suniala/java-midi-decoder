@@ -32,12 +32,12 @@ import javax.sound.midi.SysexMessage;
 
 public class MidiDecoder {
     public static MidiM<?> decodeMessage(MidiMessage message) {
-        if (message instanceof ShortMessage) {
-            return decodeMessage((ShortMessage) message);
-        } else if (message instanceof SysexMessage) {
-            return decodeMessage((SysexMessage) message);
-        } else if (message instanceof MetaMessage) {
-            return decodeMessage((MetaMessage) message);
+        if (message instanceof ShortMessage sm) {
+            return decodeMessage(sm);
+        } else if (message instanceof SysexMessage sm) {
+            return decodeMessage(sm);
+        } else if (message instanceof MetaMessage mm) {
+            return decodeMessage(mm);
         } else {
             throw new IllegalArgumentException("Unsupported message type: " + message.getClass());
         }
