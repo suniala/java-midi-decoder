@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import static fi.kapsi.kosmik.javamididecoder.Util.getHexString;
 
-public abstract class MidiSysexM extends MidiM<SysexMessage> {
+public abstract sealed class MidiSysexM extends MidiM<SysexMessage> {
     protected MidiSysexM(SysexMessage m) {
         super(m);
     }
@@ -17,7 +17,7 @@ public abstract class MidiSysexM extends MidiM<SysexMessage> {
     }
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    public static class MidiDescribedSysexM extends MidiSysexM {
+    public static final class MidiDescribedSysexM extends MidiSysexM {
         private final Optional<String> description;
 
         public MidiDescribedSysexM(SysexMessage m) {

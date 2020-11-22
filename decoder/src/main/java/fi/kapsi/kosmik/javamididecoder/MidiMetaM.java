@@ -4,7 +4,7 @@ import javax.sound.midi.MetaMessage;
 
 import static java.lang.String.format;
 
-public abstract class MidiMetaM extends MidiM<MetaMessage> {
+public abstract sealed class MidiMetaM extends MidiM<MetaMessage> {
     /**
      * A copy of the data to be used instead of {@link MetaMessage#getData()}, that
      * always returns a new copy.
@@ -40,7 +40,7 @@ public abstract class MidiMetaM extends MidiM<MetaMessage> {
         T visit(MidiSequencerSpecificMetaM m);
     }
 
-    public static class MidiSequenceNumberM extends MidiMetaM {
+    public static final class MidiSequenceNumberM extends MidiMetaM {
         public MidiSequenceNumberM(MetaMessage m) {
             super(m);
         }
@@ -55,7 +55,7 @@ public abstract class MidiMetaM extends MidiM<MetaMessage> {
         }
     }
 
-    public static class MidiMetaTextM extends MidiMetaM {
+    public static final class MidiMetaTextM extends MidiMetaM {
         public enum MetaTextType {
             TextEvent("Text Event"),
             CopyrightNotice("Copyright Notice"),
@@ -93,7 +93,7 @@ public abstract class MidiMetaM extends MidiM<MetaMessage> {
         }
     }
 
-    public static class MidiChannelPrefixM extends MidiMetaM {
+    public static final class MidiChannelPrefixM extends MidiMetaM {
         public MidiChannelPrefixM(MetaMessage m) {
             super(m);
         }
@@ -108,7 +108,7 @@ public abstract class MidiMetaM extends MidiM<MetaMessage> {
         }
     }
 
-    public static class MidiEndOfTrackM extends MidiMetaM {
+    public static final class MidiEndOfTrackM extends MidiMetaM {
         public MidiEndOfTrackM(MetaMessage m) {
             super(m);
         }
@@ -119,7 +119,7 @@ public abstract class MidiMetaM extends MidiM<MetaMessage> {
         }
     }
 
-    public static class MidiTempoM extends MidiMetaM {
+    public static final class MidiTempoM extends MidiMetaM {
         public MidiTempoM(MetaMessage m) {
             super(m);
         }
@@ -148,7 +148,7 @@ public abstract class MidiMetaM extends MidiM<MetaMessage> {
         }
     }
 
-    public static class MidiSMTPEOffsetM extends MidiMetaM {
+    public static final class MidiSMTPEOffsetM extends MidiMetaM {
         public MidiSMTPEOffsetM(MetaMessage m) {
             super(m);
         }
@@ -179,8 +179,8 @@ public abstract class MidiMetaM extends MidiM<MetaMessage> {
         }
     }
 
-    public static class MidiTimeSignatureM extends MidiMetaM {
-        public static class TimeSignature {
+    public static final class MidiTimeSignatureM extends MidiMetaM {
+        public static final class TimeSignature {
             private final int beats;
 
             private final int unit;
@@ -221,7 +221,7 @@ public abstract class MidiMetaM extends MidiM<MetaMessage> {
         }
     }
 
-    public static class MidiKeySignatureM extends MidiMetaM {
+    public static final class MidiKeySignatureM extends MidiMetaM {
         private static final String[] keySignatureNames =
                 {"Cb", "Gb", "Db", "Ab", "Eb", "Bb", "F", "C", "G", "D", "A", "E", "B", "F#", "C#"};
 
@@ -240,7 +240,7 @@ public abstract class MidiMetaM extends MidiM<MetaMessage> {
         }
     }
 
-    public static class MidiSequencerSpecificMetaM extends MidiMetaM {
+    public static final class MidiSequencerSpecificMetaM extends MidiMetaM {
         public MidiSequencerSpecificMetaM(MetaMessage m) {
             super(m);
         }
@@ -256,7 +256,7 @@ public abstract class MidiMetaM extends MidiM<MetaMessage> {
         }
     }
 
-    public static class MidiUnsupportedMetaM extends MidiMetaM {
+    public static final class MidiUnsupportedMetaM extends MidiMetaM {
         public MidiUnsupportedMetaM(MetaMessage m) {
             super(m);
         }

@@ -6,7 +6,8 @@ import fi.kapsi.kosmik.javamididecoder.MidiSysexM.MidiSysexMVisitor;
 
 import javax.sound.midi.MidiMessage;
 
-public abstract class MidiM<T extends MidiMessage> {
+public abstract sealed class MidiM<T extends MidiMessage>
+        permits MidiSysexM, MidiShortM, MidiMetaM {
     protected final T m;
 
     public MidiM(T m) {

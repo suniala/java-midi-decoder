@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import static fi.kapsi.kosmik.javamididecoder.Util.get14bitValue;
 
-public abstract class MidiShortM extends MidiM<ShortMessage> {
+public abstract sealed class MidiShortM extends MidiM<ShortMessage> {
     private static final String[] keyNames =
             {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
 
@@ -51,7 +51,7 @@ public abstract class MidiShortM extends MidiM<ShortMessage> {
         T visit(MidiUnsupportedShortM m);
     }
 
-    public static abstract class MidiChannelM extends MidiShortM {
+    public static abstract sealed class MidiChannelM extends MidiShortM {
         protected MidiChannelM(ShortMessage m) {
             super(m);
         }
@@ -61,7 +61,7 @@ public abstract class MidiShortM extends MidiM<ShortMessage> {
         }
     }
 
-    public abstract static class MidiNoteM extends MidiChannelM {
+    public abstract static sealed class MidiNoteM extends MidiChannelM {
         public MidiNoteM(ShortMessage m) {
             super(m);
         }
@@ -85,7 +85,7 @@ public abstract class MidiShortM extends MidiM<ShortMessage> {
         }
     }
 
-    public static class MidiNoteOnM extends MidiNoteM {
+    public static final class MidiNoteOnM extends MidiNoteM {
         public MidiNoteOnM(ShortMessage m) {
             super(m);
         }
@@ -101,7 +101,7 @@ public abstract class MidiShortM extends MidiM<ShortMessage> {
         }
     }
 
-    public static class MidiNoteOffM extends MidiNoteM {
+    public static final class MidiNoteOffM extends MidiNoteM {
         public MidiNoteOffM(ShortMessage m) {
             super(m);
         }
@@ -117,7 +117,7 @@ public abstract class MidiShortM extends MidiM<ShortMessage> {
         }
     }
 
-    public static class MidiPolyphonicKeyPressureM extends MidiChannelM {
+    public static final class MidiPolyphonicKeyPressureM extends MidiChannelM {
         public MidiPolyphonicKeyPressureM(ShortMessage m) {
             super(m);
         }
@@ -136,7 +136,7 @@ public abstract class MidiShortM extends MidiM<ShortMessage> {
         }
     }
 
-    public static class MidiControlChangeM extends MidiChannelM {
+    public static final class MidiControlChangeM extends MidiChannelM {
         public MidiControlChangeM(ShortMessage m) {
             super(m);
         }
@@ -155,7 +155,7 @@ public abstract class MidiShortM extends MidiM<ShortMessage> {
         }
     }
 
-    public static class MidiProgramChangeM extends MidiChannelM {
+    public static final class MidiProgramChangeM extends MidiChannelM {
         public MidiProgramChangeM(ShortMessage m) {
             super(m);
         }
@@ -170,7 +170,7 @@ public abstract class MidiShortM extends MidiM<ShortMessage> {
         }
     }
 
-    public static class MidiKeyPressureM extends MidiChannelM {
+    public static final class MidiKeyPressureM extends MidiChannelM {
         public MidiKeyPressureM(ShortMessage m) {
             super(m);
         }
@@ -189,7 +189,7 @@ public abstract class MidiShortM extends MidiM<ShortMessage> {
         }
     }
 
-    public static class MidiPitchWheelChangeM extends MidiChannelM {
+    public static final class MidiPitchWheelChangeM extends MidiChannelM {
         public MidiPitchWheelChangeM(ShortMessage m) {
             super(m);
         }
@@ -204,7 +204,7 @@ public abstract class MidiShortM extends MidiM<ShortMessage> {
         }
     }
 
-    public abstract static class MidiSystemMessageM extends MidiShortM {
+    public abstract static sealed class MidiSystemMessageM extends MidiShortM {
         protected static final String[] SYSTEM_MESSAGE_TEXT = {
                 "System Exclusive (should not be in ShortMessage!)",
                 "MTC Quarter Frame: ",
@@ -230,7 +230,7 @@ public abstract class MidiShortM extends MidiM<ShortMessage> {
     }
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    public static class MidiMTCQuarterFrameM extends MidiSystemMessageM {
+    public static final class MidiMTCQuarterFrameM extends MidiSystemMessageM {
         private static final String[] QUARTER_FRAME_MESSAGE_TEXT = {
                 "frame count LS: ",
                 "frame count MS: ",
@@ -281,7 +281,7 @@ public abstract class MidiShortM extends MidiM<ShortMessage> {
         }
     }
 
-    public static class MidiSongPositionM extends MidiSystemMessageM {
+    public static final class MidiSongPositionM extends MidiSystemMessageM {
         public MidiSongPositionM(ShortMessage m) {
             super(m);
         }
@@ -296,7 +296,7 @@ public abstract class MidiShortM extends MidiM<ShortMessage> {
         }
     }
 
-    public static class MidiSongSelectM extends MidiSystemMessageM {
+    public static final class MidiSongSelectM extends MidiSystemMessageM {
         public MidiSongSelectM(ShortMessage m) {
             super(m);
         }
@@ -311,7 +311,7 @@ public abstract class MidiShortM extends MidiM<ShortMessage> {
         }
     }
 
-    public static class MidiOtherSystemMessageM extends MidiSystemMessageM {
+    public static final class MidiOtherSystemMessageM extends MidiSystemMessageM {
         public MidiOtherSystemMessageM(ShortMessage m) {
             super(m);
         }
@@ -326,7 +326,7 @@ public abstract class MidiShortM extends MidiM<ShortMessage> {
         }
     }
 
-    public static class MidiUnsupportedShortM extends MidiShortM {
+    public static final class MidiUnsupportedShortM extends MidiShortM {
         public MidiUnsupportedShortM(ShortMessage m) {
             super(m);
         }
