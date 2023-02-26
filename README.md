@@ -1,12 +1,10 @@
 # Java Midi Decoder
 
-A work in progress... Basically I copied a Midi debugger of sorts called
-[DumpReceiver](https://github.com/suniala/java-midi-decoder/commit/73390f23) and
-am currently refactoring it into a more useful decoder library.
+This library makes working with javax.sound.midi events easier.
 
 I don't have the means or time to test this comprehensively so there probably
 are some errors. Also, some message types are not as structured as they could
-be.
+be. Having said that, I do use this library in [midi-tuutti](https://github.com/suniala/midi-tuutti)
 
 ## Rationale
 
@@ -30,5 +28,5 @@ void printTimeSignature(MidiTimeSignatureM m) {
 ```
 
 ## Related Projects
-* http://www.jfugue.org enables "Music Programming for Java™ and JVM Languages"
 * https://github.com/suniala/midi-tuutti uses this library
+* http://www.jfugue.org enables "Music Programming for Java™ and JVM Languages"
