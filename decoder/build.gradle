@@ -1,7 +1,13 @@
-dependencies {
+plugins {
+    id 'java-library'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
 }
 
 jar {
     archivesBaseName = 'java-midi-decoder-' + rootProject.version
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
 }

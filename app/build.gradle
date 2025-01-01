@@ -1,9 +1,11 @@
+plugins {
+    id 'application'
+}
+
 dependencies {
     implementation project(':decoder')
 }
 
-jar {
-    archivesBaseName = 'midi-dump-' + rootProject.version
-    manifest { attributes 'Main-Class': 'fi.kapsi.kosmik.javamididecoder.app.MidiDump' }
-    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+application {
+    mainClass = 'fi.kapsi.kosmik.javamididecoder.app.MidiDump'
 }
